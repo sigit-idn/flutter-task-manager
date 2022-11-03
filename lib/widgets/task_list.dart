@@ -4,35 +4,16 @@ import 'package:flutter_task_manager/models/task.dart';
 import 'package:flutter_task_manager/widgets/task_item.dart';
 
 class _TaskListState extends State<TaskList> {
-  Future<List<Task>>? _futureTask;
-
-  @override
-  void initState() {
-    super.initState();
-    _futureTask = Task.fetchAll();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
-        shrinkWrap: true,
+      child: Column(
         children: <Widget>[
-          FutureBuilder<List<Task>>(
-            future: _futureTask,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                  children: snapshot.data!
-                      .map((task) => TaskItem(task: task))
-                      .toList(),
-                );
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              return const CircularProgressIndicator();
-            },
+          Column(
+            children: widget.tasks
+                .map((task) => TaskItem(task: task))
+                .toList(),
           ),
         ],
       ),
@@ -41,7 +22,9 @@ class _TaskListState extends State<TaskList> {
 }
 
 class TaskList extends StatefulWidget {
-  const TaskList({super.key});
+  final List<Task> tasks;
+
+  const TaskList({Key? key, required this.tasks}) : super(key: key);
 
   @override
   _TaskListState createState() => _TaskListState();

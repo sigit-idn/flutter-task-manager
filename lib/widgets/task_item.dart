@@ -66,7 +66,14 @@ class _TaskItemState extends State<TaskItem> {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: const Color(0xFFF0F0F0),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                  Color(0xFFE8E8E8),
+                  Color(0xFFF0F0F0),
+                  ],
+                ),
               ),
               child: FractionallySizedBox(
                 widthFactor: widget.task.progress / 100,
@@ -90,8 +97,7 @@ class _TaskItemState extends State<TaskItem> {
               children: <Widget>[
                 Text(
                   '${widget.task.progress.toStringAsFixed(2)}%',
-                  style: widget.task.deadline
-                    .difference(DateTime.now()).inDays < 3
+                  style: widget.task.daysLeft < 3
                     ? const TextStyle(
                         fontSize: 16,
                         color: Color(0xFFFFAFCC),
@@ -108,32 +114,20 @@ class _TaskItemState extends State<TaskItem> {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: widget.task.deadline
-                      .difference(DateTime.now()).inDays < 3
+                    color: widget.task.daysLeft < 3
                       ? const Color(0xFFFFAFCC)
-                      : const Color(0xFFBFE0FF),
-                    border: widget.task.deadline
-                      .difference(DateTime.now()).inDays < 3
-                      ? Border.all(
-                          color: const Color(0xFFFFAFCC),
-                          width: 0.3,
-                        )
-                      : Border.all(
-                          color: const Color(0xFF0084FF),
-                          width: 0.3,
-                        ),
+                      : const Color(0xFFCDE7FF),
                   ),
                   child: Text(
-                    '${widget.task.deadline.difference(DateTime.now()).inDays} days left',
-                    style: widget.task.deadline
-                      .difference(DateTime.now()).inDays < 3
+                    '${widget.task.daysLeft} days left',
+                    style: widget.task.daysLeft < 3
                       ? const TextStyle(
                           fontSize: 16,
                           color: Color(0xFFFF146A),
                         )
                       : const TextStyle(
                           fontSize: 16,
-                          color: Color(0xFF0084FF),
+                          color: Color(0xFF0F7ADD),
                         ),
                   ),
                 ),

@@ -1,17 +1,20 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/models/chunk.dart';
 import 'package:flutter_task_manager/models/task.dart';
-import 'package:flutter_task_manager/screens/detail_screen.dart';
 import 'package:flutter_task_manager/widgets/add_task.dart';
 import 'package:flutter_task_manager/widgets/task_list.dart';
-import 'package:path/path.dart';
+import 'package:flutter_task_manager/widgets/task_summary.dart';
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<List<Task>>? _futureTask;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _futureTask = Task.fetchAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -32,8 +35,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Stack(
           children: <Widget>[
-            const Expanded(
-              child: TaskList(),
+            ListView(
+              children: <Widget>[
+                FutureBuilder(
+                  future: _futureTask,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return TaskSummary(tasks: snapshot.data!);
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+
+                    return const CupertinoActivityIndicator();
+                  },
+                ),
+                FutureBuilder(
+                  future: _futureTask,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return TaskList(tasks: snapshot.data!);
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+
+                    return const CupertinoActivityIndicator();
+                  },
+                ),
+              ],
             ),
             Positioned(
               bottom: 12,
@@ -60,9 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFFAE93BE),
+                        color: Color(0xAAAE93BE),
                         blurRadius: 12,
-                        offset: Offset(0, 6),
+                        offset: Offset(0, 10),
                       ),
                     ],
                   ),

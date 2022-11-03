@@ -102,4 +102,8 @@ class Task {
     return chunks.map((chunk) => chunk.finishedAt).reduce((value, element) => value!.isAfter(element!) ? value : element);
   }
 
+  int get daysLeft {
+    return deadline.difference(DateTime.now()).inDays;
+  }
+
 }
