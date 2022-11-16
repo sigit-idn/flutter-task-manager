@@ -1,8 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/models/task.dart';
 import 'package:flutter_task_manager/screens/detail_screen.dart';
+import 'package:flutter_task_manager/widgets/modals/edit_task.dart';
 
-class _TaskItemState extends State<TaskItem> {
+import '../modals/delete_task.dart';
+
+class TaskItem extends StatelessWidget {
+  final Task task;
+
+  const TaskItem({Key? key, required this.task}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +18,7 @@ class _TaskItemState extends State<TaskItem> {
         Navigator.push(
           context,
           CupertinoPageRoute(
-            builder: (context) => DetailScreen(id: widget.task.id!),
+            builder: (context) => DetailScreen(task: task),
           ),
         );
       },
@@ -39,18 +46,60 @@ class _TaskItemState extends State<TaskItem> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              widget.task.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFA2D2FF),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  task.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFA2D2FF),
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      borderRadius: BorderRadius.circular(30),
+                      color: const Color(0xFFA2D2FF),
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (context) => EditTaskModal(task: task),
+                        );
+                      },
+                      child: const Icon(
+                        CupertinoIcons.pencil,
+                        color: Color(0xFFFFFFFF),
+                      ),
+                    ),
+                    const Divider(
+                      indent: 8,
+                    ),
+                    CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      borderRadius: BorderRadius.circular(30),
+                      color: const Color.fromARGB(255, 255, 162, 204),
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (context) => DeleteTaskModal(task: task),
+                        );
+                      },
+                      child: const Icon(
+                        CupertinoIcons.trash,
+                        color: Color(0xFFFFFFFF),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 8),
-            if (widget.task.description != null)
+            if (task.description != null)
               Text(
-                widget.task.description!,
+                task.description!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -76,7 +125,7 @@ class _TaskItemState extends State<TaskItem> {
                 ),
               ),
               child: FractionallySizedBox(
-                widthFactor: widget.task.progress / 100,
+                widthFactor: task.progress / 100,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
@@ -96,11 +145,11 @@ class _TaskItemState extends State<TaskItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  '${widget.task.progress.toStringAsFixed(2)}%',
-                  style: widget.task.daysLeft < 3
+                  '${task.progress.toStringAsFixed(2)}%',
+                  style: task.daysLeft < 3
                     ? const TextStyle(
                         fontSize: 16,
-                        color: Color(0xFFFFAFCC),
+                        color: Color(0xFFFA97BB),
                       )
                     : const TextStyle(
                         fontSize: 16,
@@ -114,16 +163,16 @@ class _TaskItemState extends State<TaskItem> {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: widget.task.daysLeft < 3
-                      ? const Color(0xFFFFAFCC)
+                    color: task.daysLeft < 3
+                      ? const Color(0xFFFECBDE)
                       : const Color(0xFFCDE7FF),
                   ),
                   child: Text(
-                    '${widget.task.daysLeft} days left',
-                    style: widget.task.daysLeft < 3
+                    '${task.daysLeft} days left',
+                    style: task.daysLeft < 3
                       ? const TextStyle(
                           fontSize: 16,
-                          color: Color(0xFFFF146A),
+                          color: Color(0xFFFC4588),
                         )
                       : const TextStyle(
                           fontSize: 16,
@@ -138,13 +187,4 @@ class _TaskItemState extends State<TaskItem> {
       ),
     );
   }
-}
-
-class TaskItem extends StatefulWidget {
-  final Task task;
-
-  const TaskItem({super.key, required this.task});
-
-  @override
-  _TaskItemState createState() => _TaskItemState();
 }

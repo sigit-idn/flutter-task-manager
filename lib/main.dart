@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: CupertinoThemeData(
         primaryColor: CupertinoColors.activeBlue,
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }

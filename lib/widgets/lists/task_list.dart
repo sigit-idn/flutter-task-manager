@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/models/task.dart';
-import 'package:flutter_task_manager/widgets/task_item.dart';
+import '../../models/task.dart';
+import '../list-items/task_item.dart';
 
 class _TaskListState extends State<TaskList> {
 

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/models/task.dart';
-import 'package:flutter_task_manager/widgets/add_task.dart';
-import 'package:flutter_task_manager/widgets/task_list.dart';
-import 'package:flutter_task_manager/widgets/task_summary.dart';
+import '../models/task.dart';
+import '../widgets/modals/add_task.dart';
+import '../widgets/lists/task_list.dart';
+import '../widgets/panes/task_summary.dart';
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<List<Task>>? _futureTask;

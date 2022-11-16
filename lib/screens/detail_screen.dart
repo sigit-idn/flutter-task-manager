@@ -1,29 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_task_manager/models/task.dart';
-import 'package:flutter_task_manager/models/chunk.dart';
-import 'package:flutter_task_manager/widgets/chunk_list.dart';
-import 'package:flutter_task_manager/widgets/task_stat.dart';
+import '../models/task.dart';
+import '../widgets/lists/chunk_list.dart';
+import '../widgets/panes/task_stat.dart';
 
 class _DetailScreenState extends State<DetailScreen> {
-  Future<Task>? _task;
-  Future<List<Chunk>>? _chunks;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _task = Task.fetch(widget.id);
-    _chunks = Chunk.fetchAll();
-
-    _task!.then((task) {
-      _chunks!.then((chunks) {
-        task.chunks = chunks;
-      });
-    });
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,35 +26,8 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
         child: Column(
           children: <Widget>[
-            Expanded(
-              child: FutureBuilder<Task>(
-                future: _task,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return TaskStat(task: snapshot.data!);
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-
-                  return const CupertinoActivityIndicator();
-                },
-              ),
-            ),
-
-            Expanded(
-              child: FutureBuilder<List<Chunk>>(
-                future: _chunks,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ChunkList(chunks: snapshot.data!);
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-
-                  return const CupertinoActivityIndicator();
-                },
-              ),
-            ),
+            TaskStat(task: widget.task),
+            ChunkList(chunks: widget.task.chunks),
           ]
         ),
       ),
@@ -83,9 +36,9 @@ class _DetailScreenState extends State<DetailScreen> {
 }
 
 class DetailScreen extends StatefulWidget {
-  const DetailScreen({super.key, required this.id});
+  final Task task;
 
-  final int id;
+  const DetailScreen({super.key, required this.task});
 
   @override
   _DetailScreenState createState() => _DetailScreenState();

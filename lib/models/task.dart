@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter_task_manager/models/chunk.dart';
 import 'package:http/http.dart' as http;
@@ -19,27 +18,31 @@ class Task {
     this.startedAt,
     required this.deadline,
     this.chunks = const [],
-  });
+  }) {
+    for (var chunk in chunks) {
+      chunk.task = this;
+    }
+  }
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'],
-      title: json['title'],
+      id         : json['id'],
+      title      : json['title'],
       description: json['description'],
-      startedAt: json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
-      deadline: DateTime.parse(json['deadline']),
-      chunks: json['chunks'] != null ? (json['chunks'] as List).map((chunk) => Chunk.fromJson(chunk)).toList() : [],
+      startedAt  : json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
+      deadline   : DateTime.parse(json['deadline']),
+      chunks     : json['chunks'] != null ? (json['chunks'] as List).map((chunk) => Chunk.fromJson(chunk)).toList() : [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'title': title,
+      'id'         : id,
+      'title'      : title,
       'description': description,
-      'startedAt': startedAt?.toIso8601String(),
-      'deadline': deadline.toIso8601String(),
-      'chunks': chunks.map((chunk) => chunk.toJson()).toList(),
+      'startedAt'  : startedAt?.toIso8601String(),
+      'deadline'   : deadline.toIso8601String(),
+      'chunks'     : chunks.map((chunk) => chunk.toJson()).toList(),
     };
   }
 
@@ -63,6 +66,53 @@ class Task {
     }
   }
 
+  static Future<Task> create(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/tasks'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201) {
+      return Task.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create task');
+    }
+  }
+
+  static Future<Task> update(int id, Map<String, dynamic> data) async {
+    final response = await http.put(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/tasks/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return Task.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update task');
+    }
+  }
+
+  static Future<Task> delete(int id) async {
+    final response = await http.delete(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/tasks/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return Task.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to delete task');
+    }
+  }
+
   double get progress {
     int totalChunks = chunks.length;
 
@@ -75,31 +125,51 @@ class Task {
   }
 
   DateTime get estimatedFinishTime {
-    if (progress % 100 == 0) {
+    if (progress == 0) {
       return deadline;
     }
 
-    int estimatedSecondsLeft = ((100 - progress) * (finishedAt!.difference(startedAt!).inSeconds / progress)).round();
+    DateTime? maxChunkFinishedAt = chunks
+      .where((chunk) => chunk.finishedAt != null)
+      .map((chunk) => chunk.finishedAt)
+      .reduce((value, element) => value!.isAfter(element!) ? value : element);
 
-    return finishedAt!.add(Duration(seconds: estimatedSecondsLeft));
+    if (progress == 100) {
+      return maxChunkFinishedAt!;
+    }
+
+    int estimatedSecondsLeft = ((100 - progress) / 100 * (maxChunkFinishedAt?.difference(startedAt?? DateTime.now()).inSeconds ?? 0)).toInt();
+
+    return DateTime.now().add(Duration(seconds: estimatedSecondsLeft));
   }
 
   Duration get averageDuration {
-    int totalFinishedChunks = chunks.where((chunk) => chunk.finishedAt != null).length;
-    if (totalFinishedChunks == 0) {
+    List<Chunk>? finishedChunks = chunks.where((chunk) => chunk.finishedAt != null).toList();
+
+    if (finishedChunks.isEmpty) {
       return Duration.zero;
     }
 
-    int? totalDuration = chunks
-      .where((chunk) => chunk.duration != null)
-      .map((chunk) => chunk.duration?.inSeconds)
-      .reduce((value, element) => value! + element!);
 
-    return Duration(seconds: totalDuration! ~/ totalFinishedChunks); // ~/ means divide and round down
+    int? totalDuration = finishedChunks
+    .map((chunk) => chunk.finishedAt!.difference(startedAt!).inSeconds)
+    .reduce((value, element) => value + element);
+
+    return Duration(seconds: totalDuration ~/ finishedChunks.length); // ~/ means divide and round down
   }
 
   DateTime? get finishedAt {
-    return chunks.map((chunk) => chunk.finishedAt).reduce((value, element) => value!.isAfter(element!) ? value : element);
+    if (chunks.isEmpty) {
+      return null;
+    }
+
+    if (chunks.any((chunk) => chunk.finishedAt == null)) {
+      return null;
+    }
+
+    return chunks
+      .map((chunk) => chunk.finishedAt)
+      .reduce((value, element) => value!.isAfter(element!) ? value : element);
   }
 
   int get daysLeft {

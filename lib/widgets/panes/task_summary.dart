@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/models/task.dart';
+import '../../models/task.dart';
 
 class TaskSummary extends StatelessWidget {
   final List<Task> tasks;

@@ -1,10 +1,25 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_task_manager/screens/home_screen.dart';
 
-class _AddTaskModalState extends State<AddTaskModal> {
-  String _title = '';
-  String _description = '';
-  DateTime _deadline = DateTime.now();
+class TaskForm extends StatelessWidget {
+  final String                  title;         
+  final String?                 description;   
+  final DateTime                deadline;      
+  final void Function(String)   setTitle;      
+  final void Function(String)   setDescription;
+  final void Function(DateTime) setDeadline;   
+  final VoidCallback            submit;        
+
+
+ const TaskForm({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.deadline,
+    required this.setTitle,
+    required this.setDescription,
+    required this.setDeadline,
+    required this.submit,
+  }) : super();
 
   @override
   Widget build(BuildContext context) {
@@ -25,38 +40,30 @@ class _AddTaskModalState extends State<AddTaskModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Text(
-            'Add Task',
-            style: TextStyle(
+          Text(
+            (title == null ? 'Add Task' : 'Edit Task'),
+            style: const TextStyle(
               fontSize: 20.0,
               color: Color(0xFFCDB4DB),
             ),
           ),
           const SizedBox(height: 20.0),
           CupertinoTextField(
-            placeholder: 'Title',
+            placeholder: (title ?? 'Title'),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               color: const Color(0xFFF0F0F0),
             ),
-            onChanged: (value) {
-              setState(() {
-                _title = value;
-              });
-            },
+            onChanged: setTitle,
           ),
           const SizedBox(height: 20.0),
           CupertinoTextField(
-            placeholder: 'Description',
+            placeholder: (description ?? 'Description'),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               color: const Color(0xFFF0F0F0),
             ),
-            onChanged: (value) {
-              setState(() {
-                _description = value;
-              });
-            },
+            onChanged: setDescription,
           ),
           const SizedBox(height: 20.0),
           CupertinoButton(
@@ -68,11 +75,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   child: CupertinoDatePicker(
                     backgroundColor: const Color(0xFFFFFFFF),
                     mode: CupertinoDatePickerMode.date,
-                    onDateTimeChanged: (DateTime value) {
-                      setState(() {
-                        _deadline = value;
-                      });
-                    },
+                    onDateTimeChanged: setDeadline,
                   ),
                 ),
               );
@@ -95,7 +98,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   ),
                   const Spacer(),
                   Text(
-                    '${_deadline.year}-${_deadline.month}-${_deadline.day}',
+                    '${deadline.year}-${deadline.month}-${deadline.day}',
                     style: const TextStyle(
                       fontSize: 16.0,
                       color: Color(0xFFCDB4DB),
@@ -107,9 +110,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
           ),
           const SizedBox(height: 20.0),
           CupertinoButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: submit,
             child: Container(
               width: double.infinity,
               height: 50,
@@ -146,11 +147,4 @@ class _AddTaskModalState extends State<AddTaskModal> {
       ),
     );
   }
-}
-
-class AddTaskModal extends StatefulWidget {
-  const AddTaskModal({super.key});
-
-  @override
-  _AddTaskModalState createState() => _AddTaskModalState();
 }

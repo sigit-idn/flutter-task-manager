@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter_task_manager/models/task.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +6,7 @@ import 'package:http/http.dart' as http;
 class Chunk {
   final int?      id;
   final String    title;
-  final DateTime? finishedAt;
+  late  DateTime? finishedAt;
   late  Task?     task;
 
   Chunk({
@@ -19,19 +18,19 @@ class Chunk {
 
   factory Chunk.fromJson(Map<String, dynamic> json) {
     return Chunk(
-      id: json['id'],
-      title: json['title'],
+      id        : json['id'],
+      title     : json['title'],
       finishedAt: json['finishedAt'] != null ? DateTime.parse(json['finishedAt']) : null,
-      task: json['task'] is Task ? json['task'] : null,
+      task      : json['task']       is Task ? json['task']                       : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'title': title,
+      'id'        : id,
+      'title'     : title,
       'finishedAt': finishedAt?.toIso8601String(),
-      'task': task?.toJson(),
+      'task'      : task?.toJson(),
     };
   }
 
@@ -55,13 +54,31 @@ class Chunk {
     }
   }
 
+  Future<Chunk> partialUpdate(Map<String, dynamic> data) async {
+    final response = await http.patch(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/chunks/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return Chunk.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update chunk');
+    }
+  }
+
   Duration? get duration {
     if (finishedAt == null) {
       return null;
     }
 
-    Chunk chunkBefore = task!.chunks.firstWhere((chunk) => chunk.finishedAt == finishedAt!.subtract(const Duration(seconds: 1)));
-    DateTime startedAt = chunkBefore.finishedAt ?? task!.startedAt!;
+    Chunk? chunkBefore = task?.chunks
+      .firstWhere((chunk) => chunk.finishedAt!.isBefore(finishedAt!), orElse: () => Chunk(title: '', finishedAt: null));
+      
+    DateTime startedAt = chunkBefore?.finishedAt ?? task?.startedAt ?? DateTime.now();
 
     int days = finishedAt!.difference(startedAt).inDays;
 
