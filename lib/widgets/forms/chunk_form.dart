@@ -1,22 +1,14 @@
 import 'package:flutter/cupertino.dart';
 
-class TaskForm extends StatelessWidget {
+class ChunkForm extends StatelessWidget {
   final String?                 title;         
-  final String?                 description;   
-  final DateTime                deadline;      
   final void Function(String)   setTitle;      
-  final void Function(String)   setDescription;
-  final void Function(DateTime) setDeadline;   
   final VoidCallback            submit;        
 
-  const TaskForm({
+  const ChunkForm({
     super.key,
     required this.title,
-    required this.description,
-    required this.deadline,
     required this.setTitle,
-    required this.setDescription,
-    required this.setDeadline,
     required this.submit,
   }) : super();
 
@@ -41,7 +33,7 @@ class TaskForm extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              (title == null ? 'Add Task' : 'Edit Task'),
+              (title == null ? 'Add Chunk' : 'Edit Chunk'),
               style: const TextStyle(
                 fontSize: 20.0,
                 color: Color(0xFFCDB4DB),
@@ -62,62 +54,7 @@ class TaskForm extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20.0),
-            CupertinoTextFormFieldRow(
-              controller: TextEditingController(text: description),
-              placeholder: 'Description',
-              onChanged: setDescription,
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFCDB4DB),
-                    width: 0.0,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            CupertinoButton(
-              onPressed: () {
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => Container(
-                    height: 200.0,
-                    child: CupertinoDatePicker(
-                      backgroundColor: const Color(0xFFFFFFFF),
-                      mode: CupertinoDatePickerMode.date,
-                      onDateTimeChanged: setDeadline,
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: const Color(0xFFF0F0F0),
-                ),
-                child: Row(
-                  children: <Widget>[
-                    const Text(
-                      'Deadline',
-                      style: TextStyle(
-                        color: Color(0xFFCDB4DB),
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${deadline.year}-${deadline.month}-${deadline.day}',
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Color(0xFFCDB4DB),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20.0),
+
             CupertinoButton(
               onPressed: submit,
               child: Container(

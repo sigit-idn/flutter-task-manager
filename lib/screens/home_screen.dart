@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/task.dart';
+import '../widgets/buttons/add_button.dart';
 import '../widgets/modals/add_task.dart';
 import '../widgets/lists/task_list.dart';
 import '../widgets/panes/task_summary.dart';
@@ -63,39 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            Positioned(
+            const Positioned(
               bottom: 12,
               right: 12,
-              child: CupertinoButton(
-                onPressed: () {
-                  showCupertinoModalPopup(
-                    context: context,
-                    builder: (context) => const AddTaskModal(),
-                  );
-                },
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFCDB4DB),
-                        Color(0xFFAE93BE),
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xAAAE93BE),
-                        blurRadius: 12,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.add, color: Colors.white),
-                ),
+              child: AddButton(
+                target: AddTaskModal()
               ),
             ),
           ],

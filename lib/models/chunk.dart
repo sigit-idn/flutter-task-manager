@@ -70,6 +70,44 @@ class Chunk {
     }
   }
 
+  static Future<Chunk> create(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/chunks'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201) {
+      return Chunk.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create chunk');
+    }
+  }
+
+  static Future<void> delete(int id) async {
+    final response = await http.delete(Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/chunks/$id'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete chunk');
+    }
+  }
+
+  static Future<void> update(int id, Map<String, dynamic> data) async {
+    final response = await http.put(
+      Uri.parse('https://my-json-server.typicode.com/sigit-idn/task-json-server/chunks/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update chunk');
+    }
+  }
+
   Duration? get duration {
     if (finishedAt == null) {
       return null;

@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_task_manager/widgets/modals/delete_chunk.dart';
 import '../../models/chunk.dart';
+import '../modals/edit_chunk.dart';
 
 class _ChunkItemState extends State<ChunkItem> {
   @override
@@ -39,6 +42,9 @@ class _ChunkItemState extends State<ChunkItem> {
             ),
           ),
           const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
           if (widget.chunk.finishedAt != null)
             Text(
               widget.chunk.finishedAt!.toString().substring(0, 16),
@@ -87,6 +93,36 @@ class _ChunkItemState extends State<ChunkItem> {
                 ),
               ),
             ),
+            Row(
+              children: <Widget>[
+                CupertinoButton(
+                  onPressed: () async {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) => EditChunkModal(chunk: widget.chunk),
+                    );
+                  },
+                  child: const Icon(
+                    CupertinoIcons.pencil,
+                    color: Color(0xFF666666),
+                  ),
+                ),
+                CupertinoButton(
+                  onPressed: () async {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) => DeleteChunkModal(chunk: widget.chunk),
+                    );
+                  },
+                  child: const Icon(
+                    CupertinoIcons.trash,
+                    color: Color(0xFF666666),
+                  ),
+                ),
+              ],
+            )
+            ],
+          ),
         ],
       ),
     );

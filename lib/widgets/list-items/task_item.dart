@@ -61,8 +61,6 @@ class TaskItem extends StatelessWidget {
                   children: <Widget>[
                     CupertinoButton(
                       padding: const EdgeInsets.all(0),
-                      borderRadius: BorderRadius.circular(30),
-                      color: const Color(0xFFA2D2FF),
                       onPressed: () {
                         showCupertinoModalPopup(
                           context: context,
@@ -71,7 +69,7 @@ class TaskItem extends StatelessWidget {
                       },
                       child: const Icon(
                         CupertinoIcons.pencil,
-                        color: Color(0xFFFFFFFF),
+                        color: Color(0xFF666666),
                       ),
                     ),
                     const Divider(
@@ -80,7 +78,6 @@ class TaskItem extends StatelessWidget {
                     CupertinoButton(
                       padding: const EdgeInsets.all(0),
                       borderRadius: BorderRadius.circular(30),
-                      color: const Color.fromARGB(255, 255, 162, 204),
                       onPressed: () {
                         showCupertinoModalPopup(
                           context: context,
@@ -89,7 +86,7 @@ class TaskItem extends StatelessWidget {
                       },
                       child: const Icon(
                         CupertinoIcons.trash,
-                        color: Color(0xFFFFFFFF),
+                        color: Color(0xFF666666),
                       ),
                     ),
                   ],

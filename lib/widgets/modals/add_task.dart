@@ -37,6 +37,4 @@ class AddTaskModal extends StatefulWidget {
 
   @override
   _AddTaskModalState createState() => _AddTaskModalState();
-  
-  void onAddTask(String title, String description, DateTime deadline) {}
 }
